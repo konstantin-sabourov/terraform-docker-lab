@@ -27,25 +27,12 @@ resource "docker_container" "nginx" {
 
   ports {
     internal = 80
-    external = 8080
+    external = var.nginx_port
   }
 
   networks_advanced {
     name = docker_network.app_network.name
   }
-}
-
-# create another docker_container, nginx2, but on port 8081
-resource "docker_container" "nginx2" {
-    name  = "terraform-nginx2"
-    image = docker_image.nginx.image_id
-    ports {
-        internal = 80
-        external = 8081
-    }
-    networks_advanced {
-        name = docker_network.app_network.name
-    }
 }
 
 # # Simple output to show what was created
