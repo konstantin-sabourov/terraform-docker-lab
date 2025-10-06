@@ -15,7 +15,7 @@ includes:
 
 ## Issues
 
-1. No persistent database
+1. No persistent database (Solved)
 
     ```bash
     # Create some data
@@ -30,8 +30,11 @@ includes:
     docker exec -it postgres_db psql -U appuser -d appdb -c "SELECT * FROM test;"
     ```
 
-    No, data does not persist. Try to bind a volume.
+    ~~No, data does not persist. Try to bind a volume, or use docker-managed volumes, but avoid volume reset
+    on `terraform destroy`~~
+
+    **Solution**: Use an external Docker volume, `postgres_data`
 
 2. Full reset
 
-Manually remove images?
+On `terraform destroy` the images are removed. External volumes by default are not removed.

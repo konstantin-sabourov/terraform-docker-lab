@@ -21,9 +21,12 @@ resource "docker_image" "postgres" {
   name = "postgres:15-alpine"
 }
 
-resource "docker_volume" "postgres_data" {
-  name = "postgres_data"
-}
+# # Persistent volume for PostgreSQL data, externally created
+# resource "docker_volume" "postgres_data" {
+#   name = "postgres_data"
+# }
+# As external volume, it is refered by volume name "postgres_data"
+
 
 resource "docker_container" "postgres" {
   name  = "postgres_db"
@@ -36,7 +39,7 @@ resource "docker_container" "postgres" {
   ]
 
   volumes {
-    volume_name    = docker_volume.postgres_data.name
+    volume_name    = "postgres_data"
     container_path = "/var/lib/postgresql/data"
   }
 
@@ -100,6 +103,28 @@ resource "docker_container" "webapp" {
   }
 
   # This container depends on database being healthy
+  depends_on = [
+    docker_container.postgres,
+    docker_container.redis
+  ]
+}
+
+resource "docker_container" "webapp2" {
+  name  = "webapp2"
+  image = docker_image.webapp.image_id
+  command = ["tail", "-f", "/dev/null"]
+  
+  env = [
+    "DATABASE_URL=postgresql://appuser:apppassword@database:5432/appdb",
+    "REDIS_URL=redis://cache:6379",
+    "APP_ENV=production"
+  ]
+
+  networks_advanced {
+    name = docker_network.app_network.name
+    aliases = ["webapp"]
+  }
+
   depends_on = [
     docker_container.postgres,
     docker_container.redis
