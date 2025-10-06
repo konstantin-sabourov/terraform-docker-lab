@@ -6,6 +6,10 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "~> 3.0"
     }
+    null = {
+        source = "hashicorp/null"
+        version = "~> 3.0"
+    }
   }
 }
 
@@ -41,7 +45,7 @@ module "database" {
   ]
 
   healthcheck = {
-    test     = ["CMD-SHELL", "pg_isready -U ${var.db_user}"]
+    test     = ["CMD-SHELL", "pg_isready -U ${var.db_user} -d ${var.db_name}"]
     interval = "10s"
     timeout  = "5s"
     retries  = 5
@@ -133,4 +137,17 @@ module "webapp2" {
   ]
 
   depends_on = [module.database, module.cache]
+}
+
+module "monitoring" {
+  source = "./modules/web-service"
+
+  service_name = "prometheus_tf"
+  image_name   = "prom/prometheus:latest"
+  network_name = docker_network.app_network.name
+
+  ports = [{
+    internal = 9090
+    external = 9090
+  }]
 }
