@@ -17,12 +17,20 @@ resource "docker_container" "service" {
     }
   }
 
-  dynamic "env" {
-    for_each = var.environment_vars
-    content {
-      env.value
-    }
+#   dynamic "env" {
+#     for_each = var.environment_vars
+#     content {
+#       env.value
+#     }
+#   }
+
+# Alternative way to loop over environmental variables defined in environment_vars
+dynamic "env" {
+  for_each = var.environment_vars
+  content {
+    env = env.value
   }
+}
 
   networks_advanced {
     name    = var.network_name
