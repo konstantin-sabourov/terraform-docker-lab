@@ -1,5 +1,15 @@
 # modules/web-service/main.tf
 
+# terraform docker provider added. Must be in module?
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0"
+    }
+  }
+}
+
 resource "docker_image" "service" {
   name         = var.image_name
   keep_locally = true
@@ -17,20 +27,7 @@ resource "docker_container" "service" {
     }
   }
 
-#   dynamic "env" {
-#     for_each = var.environment_vars
-#     content {
-#       env.value
-#     }
-#   }
-
-# Alternative way to loop over environmental variables defined in environment_vars
-dynamic "env" {
-  for_each = var.environment_vars
-  content {
-    env = env.value
-  }
-}
+  # NOTE: environmental variables are not set
 
   networks_advanced {
     name    = var.network_name

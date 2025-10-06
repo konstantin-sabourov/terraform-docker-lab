@@ -30,6 +30,7 @@ variable "ports" {
   default = []
 }
 
+# FIXME: could not set in modules/web-services/main.tf
 variable "environment_vars" {
   description = "Environment variables"
   type        = list(string)
