@@ -27,7 +27,7 @@ resource "docker_container" "service" {
     }
   }
 
-  # NOTE: environmental variables are not set
+  env = var.environment_vars
 
   networks_advanced {
     name    = var.network_name

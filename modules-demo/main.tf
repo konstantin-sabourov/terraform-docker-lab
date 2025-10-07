@@ -107,7 +107,7 @@ module "webapp" {
   network_name    = docker_network.app_network.name
   network_aliases = ["webapp", "app"]
 
-  command = ["tail", "-f", "/dev/null"]
+  command = ["python3", "-m", "http.server", "8000"]
 
   environment_vars = [
     "DATABASE_URL=postgresql://${var.db_user}:${var.db_password}@database:5432/${var.db_name}",
@@ -128,7 +128,7 @@ module "webapp2" {
   network_name    = docker_network.app_network.name
   network_aliases = ["webapp", "app"]  # Same aliases for load balancing
 
-  command = ["tail", "-f", "/dev/null"]
+  command = ["python3", "-m", "http.server", "8000"]
 
   environment_vars = [
     "DATABASE_URL=postgresql://${var.db_user}:${var.db_password}@database:5432/${var.db_name}",
@@ -141,7 +141,7 @@ module "webapp2" {
 
 module "monitoring" {
   source = "./modules/web-service"
-
+  # Changing to different service name, same image already used in grafana-deploygit
   service_name = "prometheus_tf"
   image_name   = "prom/prometheus:latest"
   network_name = docker_network.app_network.name
